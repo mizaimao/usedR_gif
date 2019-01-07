@@ -4,8 +4,6 @@ import cv2
 import imageio
 import numpy as np
 import random
-import skimage
-
 
 random.seed(6849815)
 
@@ -20,12 +18,11 @@ def load_bg():
         return np.full((SIZE, SIZE, 3), BACKGROUND, dtype=np.uint8)
     try:
         bg = cv2.imread(BACKGROUND_IMAGE)
+        assert bg is not None
     except:
         print('Cannot load background image')
         exit(1)
-
-    resized = cv2.resize(bg, (SIZE, SIZE))
-    return resized
+    return cv2.resize(bg, (SIZE, SIZE))
 
 
 def main():
@@ -53,10 +50,9 @@ def main():
         textY = (SIZE + textsize[1]) // 2
        
         cv2.putText(img, new_stage1_text, (textX, textY), font, stage1_size, (200,200,200), 2)
-        counter += 1
         img_list.append(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        counter += 1
         
-    
     counter = 0
     while counter < stage2_length:
         # c for color; p for position; s for size
@@ -77,11 +73,10 @@ def main():
         textY = (SIZE + textsize[1]) / 2
         px = np.random.randint(textX - misposition, textX + misposition, size=(1,), dtype=np.uint8)
         py = np.random.randint(textY - misposition, textY + misposition, size=(1,), dtype=np.uint8)
-        
         cv2.putText(img,stage2_text, (px[0], py[0]), font, s, c.tolist(), 8)
-        counter += 1
-
+        
         img_list.append(img)
+        counter += 1
 
     imageio.mimsave('R.gif', img_list)
 
