@@ -4,6 +4,8 @@ import cv2
 import imageio
 import numpy as np
 import random
+import skimage
+
 
 random.seed(6849815)
 
@@ -11,9 +13,7 @@ SIZE = 256
 BACKGROUND = (255,255,255)
 BACKGROUND_IMAGE = None
 
-font                   = cv2.FONT_HERSHEY_COMPLEX
-bottomLeftCornerOfText = (120,120)
-
+font = cv2.FONT_HERSHEY_COMPLEX
 
 def load_bg():
     if not BACKGROUND_IMAGE:
@@ -23,7 +23,9 @@ def load_bg():
     except:
         print('Cannot load background image')
         exit(1)
-    return cv2.resize(bg, (SIZE, SIZE))
+
+    resized = cv2.resize(bg, (SIZE, SIZE))
+    return resized
 
 
 def main():
@@ -50,16 +52,18 @@ def main():
         textX = (SIZE - textsize[0]) // 2
         textY = (SIZE + textsize[1]) // 2
        
-        cv2.putText(img, new_stage1_text, (textX, textY), font, stage1_size, (0,0,0), 2)
+        cv2.putText(img, new_stage1_text, (textX, textY), font, stage1_size, (200,200,200), 2)
         counter += 1
-        img_list.append(img)
+        img_list.append(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
         
     
     counter = 0
     while counter < stage2_length:
         # c for color; p for position; s for size
         img = bg.copy()
-      
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
         s = (counter*0.25) + 1
         while True:
             c = np.random.randint(256, size=(3,), dtype=np.uint8)
